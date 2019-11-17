@@ -2,6 +2,8 @@
 #include "errors.h"
 //#include "nonvol.h"
 #include "NTP.h"
+#include "timeout.h"
+#include "ConfigMode.h"
 
 #include "secrets.h"
 const char * ssid = STASSID; // your network SSID (name)
@@ -25,19 +27,11 @@ while (WiFi.status() != WL_CONNECTED) {
 
 WiFi.hostByName(ntpServerName, nist);
 
-// Serial.println(Nonvol.data.ssid);
-// Serial.println(Nonvol.data.apsk);
-// Serial.println(Nonvol.data.port);
-// Serial.println(Nonvol.data.host);
+while( NTP.network_update(nist) != 0 );
+
+ConfigMode();
 }
 
 void loop()
 {
-    error_state s = NTP.network_update(nist);
-    Serial.print("Network NTP status: "); Serial.println(s);
-    for(uint i = 0; i < 300; i++)
-    {
-        Serial.println(NTP.now());
-        delay(750);
-    }
 }
