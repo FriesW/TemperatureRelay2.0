@@ -21,7 +21,7 @@ public:
         if( WiFi.status() != WL_CONNECTED )
             return NO_NET;
 
-        udp.begin(localPort);
+        udp.begin(local_port);
 
         rb = 0;
         for(uint i = 0; rb == 0 && i < 5; i++)
@@ -66,15 +66,22 @@ public:
         return epoch;
     }
 
+    unsigned long monotonic()
+    {
+        last_monotonic = max(last_monotonic, now());
+        return last_monotonic;
+    }
+
 
 private:
 
-    unsigned long last_update;
-    unsigned long epoch;
+    unsigned long last_monotonic = 0;
+    unsigned long last_update = 0;
+    unsigned long epoch = 0;
     byte packetBuffer[NTP_PACKET_SIZE];
     WiFiUDP udp;
 
-    unsigned int localPort = 2390;
+    const unsigned int local_port = 2390;
 
     void send_packet(IPAddress& address) {
       Serial.println("sending NTP packet...");
@@ -103,6 +110,6 @@ private:
 
 #undef NTP_PACKET_SIZE
 
-_NTP NTP;
+extern _NTP NTP;
 
 #endif
