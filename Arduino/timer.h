@@ -1,24 +1,34 @@
-#ifndef _TIMEOUT_H
-#define _TIMEOUT_H
+#ifndef _TIMER_H
+#define _TIMER_H
 
-class Timeout {
+class Timer {
 
 public:
 
-    void init(unsigned long wait_max_ms)
+    void set(unsigned long wait_max_ms)
+    {
+        wait_max = wait_max_ms;
+        restart();
+    }
+
+    void restart()
     {
         ready = true;
-        wait_max = wait_max_ms;
         start_time = millis();
     }
 
-    boolean valid()
+    boolean running()
     {
         if(! ready )
             return ready;
         yield();
         ready = millis() - start_time < wait_max;
         return ready;
+    }
+
+    boolean expired()
+    {
+        return !running();
     }
 
 private:

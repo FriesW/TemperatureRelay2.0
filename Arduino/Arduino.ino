@@ -2,7 +2,6 @@
 #include "errors.h"
 //#include "nonvol.h"
 #include "NTP.h"
-#include "timeout.h"
 #include "ConfigMode.h"
 
 #include "secrets.h"

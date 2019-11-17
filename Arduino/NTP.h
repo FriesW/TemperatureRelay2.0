@@ -3,7 +3,7 @@
 
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
-#include "timeout.h"
+#include "timer.h"
 #include "errors.h"
 
 #define NTP_PACKET_SIZE 48
@@ -14,7 +14,7 @@ public:
 
     error_state network_update(IPAddress& server_ip)
     {
-        Timeout timeout;
+        Timer timeout;
         uint rb;
         unsigned long candidate_update;
 
@@ -28,8 +28,8 @@ public:
         {
 
             send_packet(server_ip);
-            timeout.init(1500);
-            while( rb == 0 && timeout.valid() )
+            timeout.set(1500);
+            while( rb == 0 && timeout.running() )
             {
                 candidate_update = millis();
                 rb = udp.parsePacket();
