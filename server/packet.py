@@ -11,13 +11,16 @@ CONST_ID = 0x37AD
 def parse_packet(data):
     try:
 
-        # minimum length of 21, for pkt with 0 readings
-        # overall packet must be odd in length
-        if len(data) < 21 or len(data) % 2 != 1:
+        # format without 'readings'
+        format = '<8sBLLL'
+        f_size = struct.calcsize(format)
+
+        # must be at least minimum length of pkt with 0 readings
+        # readings are two bytes, so 'readings' bytes must be even
+        if len(data) < f_size or (len(data) - f_size ) % 2 != 0:
             return (False, 'bad size')
 
-        format = '<8sBLLL'
-        hmac, version, const_id, nonce, epoch = struct.unpack(format)
+        hmac, version, const_id, nonce, epoch = struct.unpack_from(format, data)
 
         if version != 1:
             return (False, 'unknown version')
@@ -33,10 +36,10 @@ def parse_packet(data):
             return (False, 'bad hmac')
 
         temps = []
-        for i in range(21, len(data)-1, 2):
+        for i in range(f_size, len(data)-1, 2):
             temps.append( struct.unpack_from('<H', data, offset = i) )
 
-        return (True, temps)
+        return (True, (epoch, temps))
     except:
         return (False, 'decode exception')
 
