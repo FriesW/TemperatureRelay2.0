@@ -19,7 +19,7 @@ public:
         unsigned long candidate_update;
 
         if( WiFi.status() != WL_CONNECTED )
-            return NO_NET;
+            return E_NO_NET;
 
         udp.begin(local_port);
 
@@ -37,7 +37,7 @@ public:
         }
         if( rb == 0 )
         {
-          return TIMEOUT;
+          return E_TIMEOUT;
         }
 
         udp.read(packetBuffer, NTP_PACKET_SIZE);
