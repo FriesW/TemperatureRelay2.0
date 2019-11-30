@@ -21,15 +21,17 @@ typedef unsigned int  WORD;             // 32-bit word, change to "long" for 16-
 
 class Sha256 {
     public:
-	Sha256();
-	void update(const BYTE data[], size_t len);
-	void final(BYTE hash[]);
+    	Sha256();
+        void reset();
+    	void update(BYTE * data_ptr, size_t len);
+    	void digest();
+        BYTE output[SHA256_BLOCK_SIZE];
     private:
-	BYTE data[64];
-	WORD datalen;
-	unsigned long long bitlen;
-	WORD state[8];
-	void transform();
+    	BYTE data[64];
+    	WORD datalen;
+    	unsigned long long bitlen;
+    	WORD state[8];
+    	void transform();
 };
 
 #endif   // SHA256_H

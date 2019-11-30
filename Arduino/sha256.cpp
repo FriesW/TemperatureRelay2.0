@@ -46,7 +46,11 @@ static const WORD k[64] = {
 
 /*********************** ACTUAL IMPLEMENTATION ***********************/
 Sha256::Sha256() {
-    this->datalen = 0;
+    this->reset();
+}
+
+void Sha256::reset() {
+	this->datalen = 0;
     this->bitlen = 0;
     this->state[0] = 0x6a09e667;
     this->state[1] = 0xbb67ae85;
@@ -56,38 +60,40 @@ Sha256::Sha256() {
     this->state[5] = 0x9b05688c;
     this->state[6] = 0x1f83d9ab;
     this->state[7] = 0x5be0cd19;
+	memset(output, 0, SHA256_BLOCK_SIZE);
 }
 
-void Sha256::update(const BYTE data[], size_t len) {
+void Sha256::update(BYTE * data_ptr, size_t len) {
     WORD i;
 
     for (i = 0; i < len; ++i) {
-	this->data[this->datalen] = data[i];
-	this->datalen++;
-	if (this->datalen == 64) {
-	    this->transform();
-	    this->bitlen += 512;
-	    this->datalen = 0;
-	}
+		this->data[this->datalen] = (BYTE)*data_ptr;
+		data_ptr++;
+		this->datalen++;
+		if (this->datalen == 64) {
+		    this->transform();
+		    this->bitlen += 512;
+		    this->datalen = 0;
+		}
     }
 }
 
-void Sha256::final(BYTE hash[]) {
+void Sha256::digest() {
     WORD i;
 
     i = this->datalen;
 
     // Pad whatever data is left in the buffer.
     if (this->datalen < 56) {
-	this->data[i++] = 0x80;
-	while (i < 56) //@@@ optimize with memset
-	    this->data[i++] = 0x00;
+		this->data[i++] = 0x80;
+		while (i < 56) //@@@ optimize with memset
+		    this->data[i++] = 0x00;
     } else {
-	this->data[i++] = 0x80;
-	while (i < 64) //@@@ optimize with memset
-	    this->data[i++] = 0x00;
-	this->transform();
-	memset(this->data, 0, 56);
+		this->data[i++] = 0x80;
+		while (i < 64) //@@@ optimize with memset
+		    this->data[i++] = 0x00;
+		this->transform();
+		memset(this->data, 0, 56);
     }
 
     // Append to the padding the total message's length in bits and transform.
@@ -105,14 +111,14 @@ void Sha256::final(BYTE hash[]) {
     // Since this implementation uses little endian byte ordering and SHA uses big endian,
     // reverse all the bytes when copying the final state to the output hash.
     for (i = 0; i < 4; ++i) {
-	hash[i]      = (this->state[0] >> (24 - i * 8)) & 0x000000ff;
-	hash[i + 4]  = (this->state[1] >> (24 - i * 8)) & 0x000000ff;
-	hash[i + 8]  = (this->state[2] >> (24 - i * 8)) & 0x000000ff;
-	hash[i + 12] = (this->state[3] >> (24 - i * 8)) & 0x000000ff;
-	hash[i + 16] = (this->state[4] >> (24 - i * 8)) & 0x000000ff;
-	hash[i + 20] = (this->state[5] >> (24 - i * 8)) & 0x000000ff;
-	hash[i + 24] = (this->state[6] >> (24 - i * 8)) & 0x000000ff;
-	hash[i + 28] = (this->state[7] >> (24 - i * 8)) & 0x000000ff;
+		this->output[i]      = (this->state[0] >> (24 - i * 8)) & 0x000000ff;
+		this->output[i + 4]  = (this->state[1] >> (24 - i * 8)) & 0x000000ff;
+		this->output[i + 8]  = (this->state[2] >> (24 - i * 8)) & 0x000000ff;
+		this->output[i + 12] = (this->state[3] >> (24 - i * 8)) & 0x000000ff;
+		this->output[i + 16] = (this->state[4] >> (24 - i * 8)) & 0x000000ff;
+		this->output[i + 20] = (this->state[5] >> (24 - i * 8)) & 0x000000ff;
+		this->output[i + 24] = (this->state[6] >> (24 - i * 8)) & 0x000000ff;
+		this->output[i + 28] = (this->state[7] >> (24 - i * 8)) & 0x000000ff;
     }
 }
 
