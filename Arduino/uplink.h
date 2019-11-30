@@ -1,4 +1,4 @@
-#ifndef _UPLINK_K
+#ifndef _UPLINK_H
 #define _UPLINK_H
 
 #include <ESP8266WiFi.h>
