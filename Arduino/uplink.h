@@ -91,8 +91,8 @@ private:
     {
         static char key [] = "test_key";
         sha_hash.reset();
-        sha_hash.update((BYTE *)key, strlen(key) - 1);
-        sha_hash.update((BYTE *)(&pkt + 8), size - 8);
+        sha_hash.update((BYTE *)key, strlen(key));
+        sha_hash.update(((BYTE *)(&pkt)) + 8, size - 8);
         sha_hash.digest();
     }
 
