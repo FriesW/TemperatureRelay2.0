@@ -37,7 +37,7 @@ def parse_packet(data):
 
         temps = []
         for i in range(f_size, len(data)-1, 2):
-            temps.append( struct.unpack_from('<H', data, offset = i) )
+            temps.append( struct.unpack_from('<H', data, offset = i)[0] )
 
         return (True, (epoch, temps))
     except:
