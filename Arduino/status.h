@@ -24,7 +24,7 @@ public:
     {
         if( idx < sizeof(PIN_LEDS) )
         {
-            pinMode(PIN_LEDS[idx], LOW);
+            digitalWrite(PIN_LEDS[idx], LOW);
             t_active[idx] = false;
         }
     }
@@ -33,7 +33,7 @@ public:
     {
         if( idx < sizeof(PIN_LEDS) )
         {
-            pinMode(PIN_LEDS[idx], HIGH);
+            digitalWrite(PIN_LEDS[idx], HIGH);
             t_active[idx] = false;
         }
     }
