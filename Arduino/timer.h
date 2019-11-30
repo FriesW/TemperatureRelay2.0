@@ -1,17 +1,19 @@
 #ifndef _TIMER_H
 #define _TIMER_H
 
+#include <Arduino.h>
+
 class Timer {
 
 public:
 
-    void set(unsigned long wait_max_ms)
+    ICACHE_RAM_ATTR void set(unsigned long wait_max_ms)
     {
         wait_max = wait_max_ms;
         restart();
     }
 
-    void restart()
+    ICACHE_RAM_ATTR void restart()
     {
         ready = true;
         start_time = millis();
@@ -29,6 +31,19 @@ public:
     boolean expired()
     {
         return !running();
+    }
+
+    ICACHE_RAM_ATTR boolean fast_running()
+    {
+        if(! ready )
+            return ready;
+        ready = millis() - start_time < wait_max;
+        return ready;
+    }
+
+    ICACHE_RAM_ATTR boolean fast_expired()
+    {
+        return !fast_running();
     }
 
 private:
