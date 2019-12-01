@@ -7,14 +7,19 @@
 #define SSID_LEN 32
 #define APSK_LEN 32
 #define HOST_LEN 50
+#define HKEY_LEN 50
 
 typedef struct
 {
     char ssid[SSID_LEN];
     char apsk[APSK_LEN];
     char host[HOST_LEN];
-    unsigned int port;
+    uint16_t port;
+    char hmac_key[HKEY_LEN];
 } nonvol_data;
+
+boolean is_str(char * str_ptr, unsigned int str_len);
+
 
 class _Nonvol {
 
@@ -35,26 +40,15 @@ public:
     boolean is_valid()
     {
         return
-        is_ascii_str(data.ssid, SSID_LEN) &&
-        is_ascii_str(data.apsk, APSK_LEN) &&
-        is_ascii_str(data.host, HOST_LEN) &&
-        data.port >= 0 && data.port <= 65535;
+        is_str(data.ssid, SSID_LEN) &&
+        is_str(data.apsk, APSK_LEN) &&
+        is_str(data.host, HOST_LEN) &&
+        is_str(data.hmac_key, HKEY_LEN) &&
+        data.port >= 1 && data.port <= 65535;
     }
 
 
     nonvol_data data;
-
-private:
-    boolean is_ascii_str(char * str_ptr, unsigned int str_len)
-    {
-        for(unsigned int i = 0; i < str_len; i++)
-        {
-            char c = str_ptr[i];
-            if( c < 32 || c > 126 ) return false;
-            if( c == 0 ) return true;
-        }
-        return false;
-    }
 
 };
 
