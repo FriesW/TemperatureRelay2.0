@@ -34,7 +34,7 @@ ICACHE_RAM_ATTR void _Button::_isr()
 noInterrupts();
 if(debounce.fast_expired())
     {
-        debounce.set(100);
+        debounce.set(200);
         switch(p_state)
         {
             case NO_CHANGE_OFF:
