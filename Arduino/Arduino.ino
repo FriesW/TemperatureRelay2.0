@@ -1,25 +1,47 @@
 #include <ESP8266WiFi.h>
 #include "status.h"
-#include "net_manager.h"
 #include "sensor.h"
+#include "pin_map.h"
+#include "metro.h"
+#include "nonvol.h"
+#include "ConfigMode.h"
 
-#include "timer.h"
-
-Timer reading;
+static Metro m_read;
 
 void setup()
 {
 Serial.begin(115200);
-reading.set(1000);
+
+pinMode(PIN_BUTTON, INPUT_PULLUP);
+delay(100);
+if( digitalRead(PIN_BUTTON) == LOW || !Nonvol.is_valid() )
+{
+    Status.all_blink();
+    ConfigMode.start();
+    while(true)
+    {
+        ConfigMode.periodic();
+        Status.periodic();
+        yield();
+    }
+}
+
+WiFi.mode(WIFI_STA);
+WiFi.begin(Nonvol.data.ssid, Nonvol.data.apsk);
+Status.blink(0);
+
+wifi_set_sleep_type(LIGHT_SLEEP_T);
+
+m_read.set( 60 * 1000 ); // * 10
 }
 
 void loop()
 {
-    Status.periodic();
-    NetManager.periodic();
-    if(reading.expired())
-    {
+    if( WiFi.status() == WL_CONNECTED )
+            Status.on(0);
+
+    if( m_read.elapsed() )
         Sensor.read();
-        reading.set(1000);
-    }
+
+    delay(1000);
 }

@@ -25,25 +25,14 @@ public:
             return ready;
         yield();
         ready = millis() - start_time < wait_max;
+        if(ready)
+            delay(100);
         return ready;
     }
 
     boolean expired()
     {
         return !running();
-    }
-
-    ICACHE_RAM_ATTR boolean fast_running()
-    {
-        if(! ready )
-            return ready;
-        ready = millis() - start_time < wait_max;
-        return ready;
-    }
-
-    ICACHE_RAM_ATTR boolean fast_expired()
-    {
-        return !fast_running();
     }
 
 private:
