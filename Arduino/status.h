@@ -44,6 +44,21 @@ public:
             t_active[idx] = true;
     }
 
+    void all_on()
+    {
+        for(uint i = 0; i < sizeof(PIN_LEDS); i++) on(i);
+    }
+
+    void all_off()
+    {
+        for(uint i = 0; i < sizeof(PIN_LEDS); i++) off(i);
+    }
+
+    void all_blink()
+    {
+        for(uint i = 0; i < sizeof(PIN_LEDS); i++) blink(i);
+    }
+
     void periodic()
     {
         if( blinker.expired() )
