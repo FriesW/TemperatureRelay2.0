@@ -1,7 +1,7 @@
 #ifndef _STATUS_H
 #define _STATUS_H
 
-#include "timer.h"
+#include "metro.h"
 #include "pin_map.h"
 
 class _Status {
@@ -15,33 +15,28 @@ public:
         {
             pinMode(PIN_LEDS[i], OUTPUT);
             digitalWrite(PIN_LEDS[i], HIGH);
-            t_active[i] = false;
+            s_active[i] = OFF;
         }
         blinker.set(500);
+        static_flash.set(5*1000);
     }
 
     void on(byte idx)
     {
         if( idx < sizeof(PIN_LEDS) )
-        {
-            digitalWrite(PIN_LEDS[idx], LOW);
-            t_active[idx] = false;
-        }
+            s_active[idx] = ON;
     }
 
     void off(byte idx)
     {
         if( idx < sizeof(PIN_LEDS) )
-        {
-            digitalWrite(PIN_LEDS[idx], HIGH);
-            t_active[idx] = false;
-        }
+            s_active[idx] = OFF;
     }
 
     void blink(byte idx)
     {
         if( idx < sizeof(PIN_LEDS) )
-            t_active[idx] = true;
+            s_active[idx] = BLINK;
     }
 
     void all_on()
@@ -61,22 +56,34 @@ public:
 
     void periodic()
     {
-        if( blinker.expired() )
+        if( blinker.elapsed() )
         {
             for(uint i = 0; i < sizeof(PIN_LEDS); i++)
-                if(t_active[i])
+                if(s_active[i] == BLINK)
                     digitalWrite(PIN_LEDS[i], state);
             state = !state;
-            blinker.restart();
+        }
+        if( static_flash.elapsed() )
+        {
+            for(uint i = 0; i < sizeof(PIN_LEDS); i++)
+                if(s_active[i] == ON )
+                    digitalWrite(PIN_LEDS[i], LOW);
+            delay(1);
+            for(uint i = 0; i < sizeof(PIN_LEDS); i++)
+                if(s_active[i] == ON )
+                    digitalWrite(PIN_LEDS[i], HIGH);
         }
     }
 
 
 private:
 
-    boolean t_active[sizeof(PIN_LEDS)];
+    typedef enum {OFF, ON, BLINK} state_type;
+
+    state_type s_active[sizeof(PIN_LEDS)];
     boolean state;
-    Timer blinker;
+    Metro blinker;
+    Metro static_flash;
 
 };
 
