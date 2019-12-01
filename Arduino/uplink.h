@@ -4,6 +4,7 @@
 #include <ESP8266WiFi.h>
 #include "packet_type.h"
 #include "sha256.h"
+#include "nonvol.h"
 #include "errors.h"
 
 class _Uplink {
@@ -89,9 +90,9 @@ private:
 
     void pkt_hmac(uint size)
     {
-        static char key [] = "test_key";
         sha_hash.reset();
-        sha_hash.update((BYTE *)key, strlen(key));
+        if( is_str(Nonvol.data.hmac_key, HKEY_LEN) )
+            sha_hash.update((BYTE *)Nonvol.data.hmac_key, strlen(Nonvol.data.hmac_key));
         sha_hash.update(((BYTE *)(&pkt)) + 8, size - 8);
         sha_hash.digest();
     }
