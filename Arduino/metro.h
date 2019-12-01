@@ -1,6 +1,8 @@
 #ifndef _METRO_H
 #define _METRO_H
 
+#include <Arduino.h>
+
 class Metro
 {
 
