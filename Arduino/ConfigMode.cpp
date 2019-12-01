@@ -36,7 +36,7 @@ void _ConfigMode::start()
 {
     running = true;
 
-    Status.all_blink();
+    Status.blink(5);
 
     WiFi.mode(WIFI_AP);
     WiFi.softAPConfig(ap_ip, ap_ip, IPAddress(255, 255, 255, 0));
@@ -57,7 +57,7 @@ void _ConfigMode::stop()
     dns_server.stop();
     server.stop();
 
-    Status.all_off();
+    Status.off(5);
 }
 
 void _ConfigMode::periodic()
