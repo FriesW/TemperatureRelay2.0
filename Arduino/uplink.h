@@ -2,23 +2,29 @@
 #define _UPLINK_H
 
 #include <ESP8266WiFi.h>
+#include <WiFiUdp.h>
 #include "packet_type.h"
 #include "sha256.h"
 #include "nonvol.h"
+#include "timer.h"
 #include "errors.h"
 
 class _Uplink {
 
 public:
 
-    _Uplink()
+    void init(unsigned int port)
     {
+        if(init_state) return;
+        init_state = true;
+        local_port = port;
         udp.begin(local_port);
-
     }
 
     error_state send_data(uint16_t data[], uint count, uint32_t time, IPAddress dest_addr)
     {
+        if(!init_state) return E_INIT;
+
         if( count > PKT_MAX_SAMPLE_COUNT )
             return E_PKT_SIZE;
 
@@ -44,6 +50,8 @@ public:
 
     error_state wait_for_ack(uint wait_time)
     {
+        if(!init_state) return E_INIT;
+
         Timer timeout;
         uint rb;
 
@@ -83,7 +91,8 @@ private:
 
     WiFiUDP udp;
 
-    const unsigned int local_port = 3780;
+    boolean init_state = false;
+    unsigned int local_port;
 
     Sha256 sha_hash;
     packet_type pkt;
@@ -98,5 +107,7 @@ private:
     }
 
 };
+
+extern _Uplink Uplink;
 
 #endif

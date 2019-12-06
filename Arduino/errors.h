@@ -4,6 +4,7 @@
 typedef enum
 {
     NO_ERROR = 0,
+    E_INIT,
     E_NO_NET,
     E_TIMEOUT,
     E_PKT_SIZE,
