@@ -1,12 +1,10 @@
 #include <ESP8266WiFi.h>
-#include "status.h"
-#include "sensor.h"
 #include "pin_map.h"
-#include "metro.h"
 #include "nonvol.h"
 #include "ConfigMode.h"
+#include "normal_mode.h"
 
-static Metro m_read;
+static void config_mode();
 
 void setup()
 {
@@ -16,7 +14,20 @@ pinMode(PIN_BUTTON, INPUT_PULLUP);
 delay(100);
 if( digitalRead(PIN_BUTTON) == LOW || !Nonvol.is_valid() )
 {
-    Status.all_blink();
+    config_mode();
+}
+pinMode(PIN_BUTTON, INPUT);
+
+normal_mode();
+
+}
+
+void loop(){}
+
+#include "status.h"
+static void config_mode()
+{
+    Status.all_on();
     ConfigMode.start();
     while(true)
     {
@@ -24,24 +35,4 @@ if( digitalRead(PIN_BUTTON) == LOW || !Nonvol.is_valid() )
         Status.periodic();
         yield();
     }
-}
-
-WiFi.mode(WIFI_STA);
-WiFi.begin(Nonvol.data.ssid, Nonvol.data.apsk);
-Status.blink(0);
-
-wifi_set_sleep_type(LIGHT_SLEEP_T);
-
-m_read.set( 60 * 1000 ); // * 10
-}
-
-void loop()
-{
-    if( WiFi.status() == WL_CONNECTED )
-            Status.on(0);
-
-    if( m_read.elapsed() )
-        Sensor.read();
-
-    delay(1000);
 }
