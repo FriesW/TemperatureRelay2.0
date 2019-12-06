@@ -12,7 +12,7 @@ typedef struct __attribute__((__packed__))
     uint32_t const_id;
     uint32_t nonce;
     uint32_t epoch_time;
-    uint16_t samples[PKT_MAX_SAMPLE_COUNT];
+    int16_t samples[PKT_MAX_SAMPLE_COUNT];
 } packet_type;
 
 #define PKT_MAX_SIZE (sizeof(packet_type))
