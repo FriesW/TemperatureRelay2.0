@@ -27,7 +27,10 @@ int16_t _Sensor::read()
     Status.off(4);
     if(!init()) return SENSOR_ERROR;
 
+    d_temp.setWaitForConversion(false);
     d_temp.requestTemperatures();
+    d_temp.setWaitForConversion(true);
+    delay(1000);
     int16_t val = d_temp.getTemp(addr);
     if( val == DEVICE_DISCONNECTED_RAW )
     {
