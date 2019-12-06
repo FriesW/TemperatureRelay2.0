@@ -28,12 +28,25 @@ public:
         last = now - (delta % p);
     }
 
+    unsigned long next()
+    {
+        unsigned long now = millis();
+        unsigned long delta = now - last;
+        return p - ( delta % p );
+    }
+
     uint16_t elapsed()
     {
         update();
         uint16_t o = cycles;
         cycles = 0;
         return o;
+    }
+
+    uint16_t peek_elapsed()
+    {
+        update();
+        return cycles;
     }
 
 private:
