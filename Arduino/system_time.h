@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-class _SystemTime {
+class SystemTime {
 
 public:
 
@@ -11,8 +11,9 @@ void periodic()
 {
     unsigned long now = millis();
     unsigned long delta = now - last_millis;
+    if(delta == 0) return;
     last_millis = now;
-    
+
     last_ms += delta;
     last_s += last_ms / 1000;
     last_ms = last_ms % 1000;
@@ -30,6 +31,13 @@ unsigned int now_ms()
     return last_ms;
 }
 
+void reset()
+{
+    last_s = 0;
+    last_ms = 0;
+    last_millis = 0;
+}
+
 private:
 
     unsigned long last_s = 0;
@@ -39,6 +47,5 @@ private:
 
 };
 
-extern _SystemTime SystemTime;
 
 #endif
