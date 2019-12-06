@@ -21,13 +21,14 @@ public:
         udp.begin(local_port);
     }
 
-    error_state send_data(uint16_t data[], uint count, uint32_t time, IPAddress dest_addr)
+    error_state send_data(int16_t data[], uint count, uint32_t time, IPAddress dest_addr)
     {
         if(!init_state) return E_INIT;
 
         if( count > PKT_MAX_SAMPLE_COUNT )
             return E_PKT_SIZE;
 
+        count = min(count, (uint)PKT_MAX_SAMPLE_COUNT);
         uint count_b = count * sizeof(uint16_t);
         uint size_b = PKT_HEADER_SIZE + count_b;
 
