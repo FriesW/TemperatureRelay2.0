@@ -1,6 +1,8 @@
 #ifndef _PACKET_TYPE_H
 #define _PACKET_TYPE_H
 
+#include <Arduino.h>
+
 #define PKT_MAX_SAMPLE_COUNT (720)  //5 days worth of samples
 #define PKT_CONST_ID (0x37AD)
 
