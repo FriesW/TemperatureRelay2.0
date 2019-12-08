@@ -79,10 +79,14 @@ void run()
         else
             yield();
 
-        Serial.print(">>> Task enter: ");
-        Serial.println(min_task->_name);
+        if(min_task->_name != NULL)
+        {
+            Serial.print(">>> Task enter: ");
+            Serial.println(min_task->_name);
+        }
         min_task->_fn();
-        Serial.println("<<< Task exit");
+        if(min_task->_name != NULL)
+            Serial.println("<<< Task exit");
 
         min_task->_next_t += min_task->_period;
 
