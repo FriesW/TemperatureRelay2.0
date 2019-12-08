@@ -141,7 +141,7 @@ static void net_fn()
         }
     }
 
-    if( reading_count != 0 )
+    if( reading_count != 0 && epoch_time != 0 )
     {
         unsigned long now = epoch_time + epoch_age.elapsed_s();
         unsigned long fr = first_reading.elapsed();
