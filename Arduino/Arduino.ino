@@ -1,6 +1,7 @@
 #include <ESP8266WiFi.h>
 #include "pin_map.h"
 #include "nonvol.h"
+#include "status.h"
 #include "ConfigMode.h"
 #include "normal_mode.h"
 
@@ -16,7 +17,6 @@ if( digitalRead(PIN_BUTTON) == LOW || !Nonvol.is_valid() )
 {
     config_mode();
 }
-pinMode(PIN_BUTTON, INPUT);
 
 delay(10 * 1000);
 
@@ -29,7 +29,7 @@ void loop(){}
 #include "status.h"
 static void config_mode()
 {
-    Status.all_on();
+    Status.all_blink();
     ConfigMode.start();
     while(true)
     {

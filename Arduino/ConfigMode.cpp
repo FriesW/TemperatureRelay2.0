@@ -3,7 +3,6 @@
 #include <DNSServer.h>
 #include "ConfigMode.h"
 #include "nonvol.h"
-#include "status.h"
 
 static IPAddress ap_ip(192, 168, 4, 1);
 static ESP8266WebServer server(80);
@@ -36,8 +35,6 @@ void _ConfigMode::start()
 {
     running = true;
 
-    Status.blink(5);
-
     WiFi.mode(WIFI_AP);
     WiFi.softAPConfig(ap_ip, ap_ip, IPAddress(255, 255, 255, 0));
     WiFi.softAP("Temp Sensor Config");
@@ -56,8 +53,6 @@ void _ConfigMode::stop()
     running = false;
     dns_server.stop();
     server.stop();
-
-    Status.off(5);
 }
 
 void _ConfigMode::periodic()
