@@ -10,7 +10,8 @@ public:
 void init(
     void (*task_function)(void),
     unsigned long offset,
-    unsigned long period
+    unsigned long period,
+    char * name
 );
 
 void start();
@@ -24,6 +25,7 @@ boolean _running;
 unsigned long _offset;
 unsigned long _period;
 unsigned long _next_t;
+char * _name;
 Task * _link;
 
 };
@@ -77,7 +79,10 @@ void run()
         else
             yield();
 
+        Serial.print(">>> Task enter: ");
+        Serial.println(min_task->_name);
         min_task->_fn();
+        Serial.println("<<< Task exit");
 
         min_task->_next_t += min_task->_period;
 

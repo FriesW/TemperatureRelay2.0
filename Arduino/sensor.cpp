@@ -9,7 +9,6 @@
 #include <DallasTemperature.h>
 #include "pin_map.h"
 #include "sensor.h"
-#include "status.h"
 
 static OneWire one_wire(PIN_D_BUS);
 static DallasTemperature d_temp(&one_wire);
@@ -24,7 +23,6 @@ _Sensor::_Sensor()
 
 int16_t _Sensor::read()
 {
-    Status.off(4);
     if(!init()) return SENSOR_ERROR;
 
     d_temp.setWaitForConversion(false);
@@ -39,9 +37,8 @@ int16_t _Sensor::read()
         return SENSOR_ERROR;
     }
 
-    Serial.printf("Sensor read: %d\n", val);
+    Serial.printf("Sensor read: %d raw  %d deg C\n", val, val >> 7);
 
-    Status.on(4);
     return val;
 }
 

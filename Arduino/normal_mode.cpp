@@ -23,9 +23,9 @@ void normal_mode()
 {
     wifi_set_sleep_type(LIGHT_SLEEP_T);
 
-    status.init(status_fn, 5, 15);
-    temp_read.init(temp_read_fn, 0, 10*60);
-    net.init(net_fn, 10, 5*60);
+    status.init(status_fn, 5, 15, "Status");
+    temp_read.init(temp_read_fn, 0, 10*60, "Sensor reading");
+    net.init(net_fn, 10, 5*60, "Net");
 
     // Sensor.init();
     Uplink.init(Nonvol.data.port);
@@ -36,7 +36,7 @@ void normal_mode()
 
 static void status_fn()
 {
-Serial.println("Task: status");
+
 }
 
 
@@ -46,7 +46,6 @@ static int16_t readings[PKT_MAX_SAMPLE_COUNT] = {0};
 
 static void temp_read_fn()
 {
-    Serial.println("Task: temp_read");
     if(reading_count >= PKT_MAX_SAMPLE_COUNT)
     {
         Serial.println("Sample queue is full");
@@ -57,14 +56,8 @@ static void temp_read_fn()
     int16_t res = Sensor.read();
     if(res == SENSOR_ERROR)
     {
-        Serial.println("Sensor read error");
         return;
     }
-    Serial.print("Sensor reading: ");
-    Serial.print(res);
-    Serial.print(" raw  ");
-    Serial.print(res >> 7);
-    Serial.println(" deg C");
 
     readings[reading_count] = res;
     reading_count++;
@@ -79,9 +72,11 @@ static void net_fn()
     static Timer dns_ttl;
     static IPAddress ip;
 
-    Serial.println("Task: net");
-
-    if( reading_count == 0 ) return;
+    if( reading_count == 0 )
+    {
+        Serial.println("Empty queue, nothing to send");
+        return;
+    }
 
     if( wifi_on() != NO_ERROR )
     {
@@ -92,6 +87,7 @@ static void net_fn()
 
     if( dns_ttl.expired() )
     {
+        Serial.println("Refreshing dest IP");
         dns_ttl.set(24 * 60 * 60 * 1000);
         if( !ip.fromString(Nonvol.data.host) )
         {
@@ -101,7 +97,9 @@ static void net_fn()
                 wifi_off();
                 return;
             }
+            else Serial.println("Success loading from DNS");
         }
+        else Serial.println("Success loading immediate IP addr");
     }
 
     error_state res;
