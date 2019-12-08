@@ -2,6 +2,7 @@
 #define _STATUS_H
 
 #include "metro.h"
+#include "timer.h"
 #include "pin_map.h"
 
 class _Status {
@@ -60,24 +61,27 @@ public:
         {
             for(uint i = 0; i < sizeof(PIN_LEDS); i++)
                 if(s_active[i] == BLINK)
-                    digitalWrite(PIN_LEDS[i], state);
-            state = !state;
+                    digitalWrite(PIN_LEDS[i], blink_state);
+            blink_state = !blink_state;
         }
-        if( static_flash.elapsed() )
+        if( static_flash.expired() )
         {
-            flash();
+            for(uint i = 0; i < sizeof(PIN_LEDS); i++)
+                if(s_active[i] != BLINK )
+                    digitalWrite(PIN_LEDS[i], HIGH);
         }
     }
 
     void flash()
     {
         for(uint i = 0; i < sizeof(PIN_LEDS); i++)
+        {
             if(s_active[i] == ON )
                 digitalWrite(PIN_LEDS[i], LOW);
-        delay(10);
-        for(uint i = 0; i < sizeof(PIN_LEDS); i++)
-            if(s_active[i] == ON )
+            if(s_active[i] == OFF )
                 digitalWrite(PIN_LEDS[i], HIGH);
+        }
+        static_flash.restart();
     }
 
 
@@ -86,9 +90,10 @@ private:
     typedef enum {OFF, ON, BLINK} state_type;
 
     state_type s_active[sizeof(PIN_LEDS)];
-    boolean state;
+    boolean blink_state;
+    uint flash_state;
     Metro blinker;
-    Metro static_flash;
+    Timer static_flash;
 
 };
 
