@@ -7,6 +7,7 @@
 #include "sha256.h"
 #include "nonvol.h"
 #include "timer.h"
+#include "hwm_rand.h"
 #include "errors.h"
 
 class _Uplink {
@@ -36,7 +37,7 @@ public:
 
         pkt.version = 1;
         pkt.const_id = PKT_CONST_ID;
-        pkt.nonce = 0xBEEF;//TODO get rand
+        pkt.nonce = hwm_rand() ^ hwm_rand();
         pkt.epoch_time = time;
 
         pkt_hmac(size_b);
