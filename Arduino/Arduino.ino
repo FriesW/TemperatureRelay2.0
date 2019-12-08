@@ -18,6 +18,8 @@ if( digitalRead(PIN_BUTTON) == LOW || !Nonvol.is_valid() )
 }
 pinMode(PIN_BUTTON, INPUT);
 
+delay(10 * 1000);
+
 normal_mode();
 
 }

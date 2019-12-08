@@ -65,14 +65,19 @@ public:
         }
         if( static_flash.elapsed() )
         {
-            for(uint i = 0; i < sizeof(PIN_LEDS); i++)
-                if(s_active[i] == ON )
-                    digitalWrite(PIN_LEDS[i], LOW);
-            delay(1);
-            for(uint i = 0; i < sizeof(PIN_LEDS); i++)
-                if(s_active[i] == ON )
-                    digitalWrite(PIN_LEDS[i], HIGH);
+            flash();
         }
+    }
+
+    void flash()
+    {
+        for(uint i = 0; i < sizeof(PIN_LEDS); i++)
+            if(s_active[i] == ON )
+                digitalWrite(PIN_LEDS[i], LOW);
+        delay(10);
+        for(uint i = 0; i < sizeof(PIN_LEDS); i++)
+            if(s_active[i] == ON )
+                digitalWrite(PIN_LEDS[i], HIGH);
     }
 
 

@@ -9,6 +9,14 @@
 #include "uplink.h"
 #include "timer.h"
 #include "errors.h"
+#include "status.h"
+
+#define S_SENSE (0)
+#define S_WIFI (1)
+#define S_IP (2)
+#define S_TIME (3)
+#define S_SEND (4)
+#define S_ACK (5)
 
 static Task status;
 static Task temp_read;
@@ -23,7 +31,7 @@ void normal_mode()
 {
     wifi_set_sleep_type(LIGHT_SLEEP_T);
 
-    status.init(status_fn, 5, 15, "Status");
+    status.init(status_fn, 5, 20, "Status");
     temp_read.init(temp_read_fn, 0, 10*60, "Sensor reading");
     net.init(net_fn, 10, 5*60, "Net");
 
@@ -36,7 +44,7 @@ void normal_mode()
 
 static void status_fn()
 {
-
+Status.flash();
 }
 
 
@@ -56,9 +64,11 @@ static void temp_read_fn()
     int16_t res = Sensor.read();
     if(res == SENSOR_ERROR)
     {
+        Status.off(S_SENSE);
         return;
     }
 
+    Status.on(S_SENSE);
     readings[reading_count] = res;
     reading_count++;
 }
@@ -78,13 +88,17 @@ static void net_fn()
         return;
     }
 
+    Status.off(S_WIFI);
     if( wifi_on() != NO_ERROR )
     {
         Serial.println("Error connecting to wifi");
         wifi_off();
         return;
     }
+    Status.on(S_WIFI);
+    Serial.println("Connected to wifi");
 
+    Status.off(S_IP);
     if( dns_ttl.expired() )
     {
         Serial.println("Refreshing dest IP");
@@ -101,9 +115,11 @@ static void net_fn()
         }
         else Serial.println("Success loading immediate IP addr");
     }
+    Status.on(S_IP);
 
     error_state res;
 
+    Status.off(S_SEND);
     res = Uplink.send_data(
         readings, reading_count, 0, ip ); //TODO the time!
     if( res != NO_ERROR )
@@ -113,15 +129,18 @@ static void net_fn()
         wifi_off();
         return;
     }
+    Status.on(S_SEND);
 
     res = Uplink.wait_for_ack(5000);
     if( res != NO_ERROR )
     {
+        Status.off(S_ACK);
         Serial.print("Error waiting for ack: ");
         Serial.println(res);
     }
     else
     {
+        Status.on(S_ACK);
         reading_count = 0;
     }
 
