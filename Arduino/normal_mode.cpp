@@ -8,6 +8,7 @@
 #include "packet_type.h"
 #include "uplink.h"
 #include "timer.h"
+#include "stopwatch.h"
 #include "errors.h"
 #include "status.h"
 
@@ -50,6 +51,7 @@ Status.flash();
 
 static uint16_t reading_count = 0;
 static int16_t readings[PKT_MAX_SAMPLE_COUNT] = {0};
+static StopWatch first_reading;
 
 
 static void temp_read_fn()
@@ -69,11 +71,14 @@ static void temp_read_fn()
     }
 
     Status.on(S_SENSE);
+    if(reading_count == 0)
+        first_reading.restart();
     readings[reading_count] = res;
     reading_count++;
 }
 
 
+static error_state pkt_send_wait(int16_t data[], uint count, uint32_t time, IPAddress dest_addr);
 static error_state wifi_on();
 static void wifi_off();
 
@@ -81,8 +86,10 @@ static void net_fn()
 {
     static Timer dns_ttl;
     static IPAddress ip;
+    static uint32_t epoch_time;
+    static StopWatch epoch_age;
 
-    if( reading_count == 0 )
+    if( reading_count == 0 && epoch_time != 0 )
     {
         Serial.println("Empty queue, nothing to send");
         return;
@@ -119,15 +126,54 @@ static void net_fn()
 
     error_state res;
 
+    if( epoch_time == 0 )
+    {
+        res = pkt_send_wait( NULL, 0, 0, ip );
+        if( res == NO_ERROR )
+        {
+            Serial.println("epoch time acquired");
+            epoch_time = Uplink.pkt.epoch_time;
+            epoch_age.restart();
+            Status.on(S_TIME);
+        }
+    }
+
+    if( reading_count != 0 )
+    {
+        unsigned long now = epoch_time + epoch_age.elapsed_s();
+        unsigned long fr = first_reading.elapsed();
+        unsigned long first_sample_time = now - first_reading.elapsed_s();
+
+        res = pkt_send_wait( readings, reading_count, first_sample_time, ip );
+        if( res == NO_ERROR )
+        {
+            // uint32_t delta = max(epoch_time, Uplink.pkt.epoch_time) - min(epoch_time, Uplink.pkt.epoch_time);
+            // if( delta > 15 * 60 )
+            // {
+            //     Serial.println("Large ack pkt delta");
+            //     Status.off(S_TIME);
+            // }
+            reading_count = 0;
+            epoch_time = Uplink.pkt.epoch_time;
+            epoch_age.restart();
+        }
+    }
+
+    wifi_off();
+}
+
+static error_state pkt_send_wait(int16_t data[], uint count, uint32_t time, IPAddress dest_addr)
+{
+    error_state res;
+
     Status.off(S_SEND);
     res = Uplink.send_data(
-        readings, reading_count, 0, ip ); //TODO the time!
+        data, count, time, dest_addr );
     if( res != NO_ERROR )
     {
         Serial.print("Error sending pkt: ");
         Serial.println(res);
-        wifi_off();
-        return;
+        return res;
     }
     Status.on(S_SEND);
 
@@ -137,14 +183,11 @@ static void net_fn()
         Status.off(S_ACK);
         Serial.print("Error waiting for ack: ");
         Serial.println(res);
+        return res;
     }
-    else
-    {
-        Status.on(S_ACK);
-        reading_count = 0;
-    }
+    Status.on(S_ACK);
 
-    wifi_off();
+    return NO_ERROR;
 }
 
 static error_state wifi_on()

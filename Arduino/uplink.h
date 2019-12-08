@@ -37,7 +37,7 @@ public:
         pkt.version = 1;
         pkt.const_id = PKT_CONST_ID;
         pkt.nonce = 0xBEEF;//TODO get rand
-        pkt.epoch_time = time;//NTP.now();
+        pkt.epoch_time = time;
 
         pkt_hmac(size_b);
         memcpy(pkt.hmac, sha_hash.output, 8);
@@ -88,6 +88,8 @@ public:
 
     }
 
+    packet_type pkt;
+
 private:
 
     WiFiUDP udp;
@@ -96,7 +98,6 @@ private:
     unsigned int local_port;
 
     Sha256 sha_hash;
-    packet_type pkt;
 
     void pkt_hmac(uint size)
     {
