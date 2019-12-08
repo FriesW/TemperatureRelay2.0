@@ -23,9 +23,9 @@ void normal_mode()
 {
     wifi_set_sleep_type(LIGHT_SLEEP_T);
 
-    status.init(status_fn, 5, 15); //15
-    temp_read.init(temp_read_fn, 0, 60); //10 * 60
-    net.init(net_fn, 10, 30); //5 * 60
+    status.init(status_fn, 5, 15);
+    temp_read.init(temp_read_fn, 0, 10*60);
+    net.init(net_fn, 10, 5*60);
 
     // Sensor.init();
     Uplink.init(Nonvol.data.port);
@@ -135,7 +135,7 @@ static error_state wifi_on()
     Timer to;
     WiFi.mode(WIFI_STA);
     WiFi.begin(Nonvol.data.ssid, Nonvol.data.apsk);
-    to.set(10*1000);
+    to.set(30*1000);
 
     while( to.running() && WiFi.status() != WL_CONNECTED )
         delay(100);
