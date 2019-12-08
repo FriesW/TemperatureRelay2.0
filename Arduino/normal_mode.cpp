@@ -31,8 +31,9 @@ static void net_fn();
 void normal_mode()
 {
     wifi_set_sleep_type(LIGHT_SLEEP_T);
+    pinMode(PIN_BUTTON, INPUT_PULLUP);
 
-    status.init(status_fn, 5, 20, "Status");
+    status.init(status_fn, 5, 15, NULL);
     temp_read.init(temp_read_fn, 0, 10*60, "Sensor reading");
     net.init(net_fn, 10, 5*60, "Net");
 
@@ -45,7 +46,9 @@ void normal_mode()
 
 static void status_fn()
 {
-Status.flash();
+if( digitalRead(PIN_BUTTON) == LOW )
+    Status.flash();
+Status.periodic();
 }
 
 
