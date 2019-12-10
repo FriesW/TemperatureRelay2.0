@@ -1,8 +1,8 @@
 import struct
 import hashlib
 import os, time
+from config import SERVICE_KEY
 
-KEY = b'test_key'
 CONST_ID = 0x37AD
 
 # | hmac | version | const_id | nonce | epoch time | readings  |
@@ -29,7 +29,7 @@ def parse_packet(data):
             return (False, 'bad const id')
 
         m = hashlib.sha256()
-        m.update(KEY)
+        m.update(SERVICE_KEY)
         m.update(data[8:])
         m = m.digest()
         if m[:8] != hmac:
@@ -51,7 +51,7 @@ def make_ack_packet():
     base = struct.pack('<BL4sL', 1, CONST_ID, os.urandom(4), int(time.time()))
 
     m = hashlib.sha256()
-    m.update(KEY)
+    m.update(SERVICE_KEY)
     m.update(base)
     m = m.digest()
 

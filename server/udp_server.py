@@ -1,6 +1,5 @@
 import asyncio
-
-PORT = 8091
+from config import SERVICE_PORT
 
 def create_udp_server(cb):
     class UdpServerHandler:
@@ -12,5 +11,5 @@ def create_udp_server(cb):
                 self.transport.sendto(resp, addr)
 
     loop = asyncio.get_event_loop()
-    listen = loop.create_datagram_endpoint( UdpServerHandler, local_addr=('0.0.0.0', PORT) )
+    listen = loop.create_datagram_endpoint( UdpServerHandler, local_addr=('0.0.0.0', SERVICE_PORT) )
     transport, protocol = loop.run_until_complete(listen)
