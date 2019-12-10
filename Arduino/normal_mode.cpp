@@ -12,12 +12,12 @@
 #include "errors.h"
 #include "status.h"
 
-#define S_SENSE (0)
-#define S_WIFI (1)
-#define S_IP (2)
-#define S_TIME (3)
-#define S_SEND (4)
-#define S_ACK (5)
+#define S_SENSE (0) // temperature is acquired
+#define S_WIFI (1)  // local wifi ap is accessible
+#define S_IP (2)    // remote service ip address is known
+#define S_TIME (3)  // time is known
+#define S_SEND (4)  // data successfully sent
+#define S_ACK (5)   // ack successfully received
 
 static Task status;
 static Task temp_read;
