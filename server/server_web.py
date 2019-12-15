@@ -3,6 +3,8 @@ from sanic import Sanic
 from sanic import response
 import database as db
 import time
+from datetime import datetime
+import pytz
 
 with open ("template.html", "r") as f:
     __template = f.read()
@@ -35,11 +37,11 @@ async def __root(req):
         last_report = 'a very long time ago'
     else:
         last_report = '{} minute{} ago'.format(last_report, 's' if last_report != 1 else '')
-    last_temp = __tf(recent[1])
+    last_temp = __ef(recent[1])
     low_12 = db.min_temp(now - HOUR * 12)
     low_36 = db.min_temp(now - HOUR * 36)
-    low_12 = 'NA' if not low_12 else __tf(low_12)
-    low_36 = 'NA' if not low_36 else __tf(low_36)
+    low_12 = 'NA' if not low_12 else __ef(low_12)
+    low_36 = 'NA' if not low_36 else __ef(low_36)
 
     tbl_day = ''
     tbl_week = ''
@@ -64,16 +66,23 @@ async def __root(req):
     ))
 
 
-def __tf(t):
+def __ef(t):
     return '{0:.1f}'.format(t / 128 * 9/5 + 32)
+
+__timezone = pytz.timezone('America/Chicago')
+def __if(t):
+    d = datetime.fromtimestamp(t, tz=__timezone)
+    return d.strftime('%m/%d %H:%M')
 
 def __tbl_format(l):
     o = ''
     max_cnt = 6 * 24 #usual number of records per day
-    step_sz = max(1, int(len(l)/max_cnt) )
-    for i in range( 0, len(l), step_sz ):
-        ti, te = l[i]
-        o += '<tr><td>{}</td><td>{}</td></tr>'.format(ti, __tf(te))
+    l_len = len(l)
+    for i in range(0, max_cnt+1):
+        i = int(round( i / max_cnt * (l_len-1), 0 ))
+        if i < l_len:
+            ti, te = l[i]
+            o += '<tr><td>{}</td><td>{}</td></tr>'.format(__if(ti), __ef(te))
     return o
 
 
