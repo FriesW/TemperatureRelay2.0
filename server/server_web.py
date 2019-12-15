@@ -11,6 +11,16 @@ with open ("template.html", "r") as f:
 
 __srv = Sanic()
 
+@__srv.route('/csv')
+async def __dl(req):
+    try:
+        t = int(req.raw_args['t'])
+    except:
+        return response.text( 'missing or invalid query param \'t\'', status=400 )
+    return response.text(
+        '\n'.join([  ','.join([str(i) for i in r]) for r in db.iterate_recent(time_cutoff = t)  ])
+        )
+
 @__srv.route('/')
 async def __root(req):
     now = int(time.time())
