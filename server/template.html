@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+
+<meta charset="utf-8">
+
+<title>Temp History</title>
+<style>
+h3 {{
+    margin-top: 1.5em;
+    margin-bottom: 0.15em;
+}}
+.red {{
+    font-weight: bold;
+    color: red;
+}}
+#reload {{
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 1em;
+    background-color: #ff8296;
+    color: #000000;
+    font-weight: bold;
+    text-decoration: none;
+}}
+#reload:hover {{
+    background-color: #ffb7c3;
+}}
+#spacer {{
+    display: none;
+    height: 3em;
+}}
+#quick tr:nth-child(odd) {{
+    background-color:#eeeeee;
+}}
+#quick tr:first-child {{
+    background-color: #555555;
+    color: #ffffff;
+}}
+#quick th, #quick td {{
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    white-space: pre;
+    text-align: center;
+}}
+#all td {{
+    vertical-align: top;
+}}
+table table {{
+    margin-right: 1.5em;
+}}
+#all th {{
+    padding: 0.25em 0.5em;
+    text-align: center;
+    background-color: #555555;
+    color: #ffffff;
+}}
+#all table td {{
+    white-space: pre;
+    font-family: "Lucida Console", Monaco, monospace;
+    font-size: 0.9em;
+    text-align: center;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+}}
+#all table tr:nth-child(odd) {{
+    background-color: #eeeeee;
+}}
+</style>
+
+</head>
+<body>
+
+<a href='.' id='reload'>
+This page was loaded on {}. It's data is probably outdated. Click to reload.
+</a>
+<div id='spacer'></div>
+<script>
+setTimeout(
+    function()
+    {{
+        document.getElementById('reload').style.display = 'block';
+        document.getElementById('spacer').style.display = 'block';
+    }},
+    30*60*1000 //30 minutes
+);
+</script>
+
+<h1>Town House Temperatures</h1>
+
+<h3>Quick Glance</h3>
+<table id='quick'>
+<tr>
+    <th>Item</th><th>Value</th>
+</tr>
+<tr>
+    <th>Last sensor check-in:</th><td><span class="{}">{}</span></td>
+</tr>
+<tr>
+    <th>Most recent temp:</th><td>{} F</td>
+</tr>
+<tr>
+    <th>12 hour low:</th><td>{} F</td>
+</tr>
+<tr>
+    <th>36 hour low:</th><td>{} F</td>
+</tr>
+</table>
+
+<table id='all'>
+<tr>
+<td>
+
+<h3>History: Day</h3>
+<table><tr><th>Time</th><th>Temperature (F)</th></tr>
+{}
+</table>
+
+</td><td>
+
+<h3>History: Week</h3>
+<table><tr><th>Time</th><th>Temperature (F)</th></tr>
+{}
+</table>
+
+</td><td>
+
+<h3>History: Month</h3>
+<table><tr><th>Time</th><th>Temperature (F)</th></tr>
+{}
+</table>
+
+</td>
+</tr>
+</table>
+
+
+<br>
+<h3>CSV Download</h3>
+<a href='csv?t={}'>Day's Data</a><br>
+<a href='csv?t={}'>Week's Data</a><br>
+<a href='csv?t={}'>Month's Data</a><br>
+<a href='csv?t={}'>ALL Data</a>
+
+</body>
+</html>

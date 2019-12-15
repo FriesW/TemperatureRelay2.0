@@ -21,17 +21,21 @@ def insert(epoch, temp):
     except:
         return False
 
-def iterate_recent(limit=1000, descending = True):
+def iterate_recent(time_cutoff=0, limit=1000, descending = True):
     limit = int(limit)
     limit = min(limit, 50000)
     yield from __cur.execute(
-        "SELECT * FROM (SELECT time, temperature FROM measurements ORDER BY time DESC LIMIT {}) sq ORDER BY time {}"\
-        .format(limit, 'DESC' if descending else 'ASC')
+        "SELECT * FROM (SELECT time, temperature FROM measurements WHERE time > {} ORDER BY time DESC LIMIT {}) sq ORDER BY time {}"\
+        .format(time_cutoff, limit, 'DESC' if descending else 'ASC')
         )
 
 def most_recent():
     for i in __cur.execute("SELECT time, temperature FROM measurements ORDER BY time DESC LIMIT 1"):
         return i
+
+def min_temp(time_cutoff=0):
+    for i in __cur.execute("SELECT MIN(temperature) FROM measurements WHERE time > {}".format(time_cutoff)):
+        return i[0]
 
 def debug_print():
     now = time.time() + 60 * 60 * 24 * 3.2
