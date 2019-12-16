@@ -91,10 +91,8 @@ def __tbl_format(l):
     idx_prev = -1
     for idx in range(0, max_cnt+1):
         idx = int(round( idx / max_cnt * (l_len-1), 0 ))
-        if idx == idx_prev:
-            return o
-        idx_prev = idx
-        if idx < l_len:
+        if idx < l_len and idx != idx_prev:
+            idx_prev = idx
             ti, te = l[idx]
             o += '<tr><td>{}</td><td>{}</td></tr>'.format(__if(ti), __ef(te))
     return o
