@@ -88,10 +88,14 @@ def __tbl_format(l):
     o = ''
     max_cnt = 6 * 24 #usual number of records per day
     l_len = len(l)
-    for i in range(0, max_cnt+1):
-        i = int(round( i / max_cnt * (l_len-1), 0 ))
-        if i < l_len:
-            ti, te = l[i]
+    idx_prev = -1
+    for idx in range(0, max_cnt+1):
+        idx = int(round( idx / max_cnt * (l_len-1), 0 ))
+        if idx == idx_prev:
+            return o
+        idx_prev = idx
+        if idx < l_len:
+            ti, te = l[idx]
             o += '<tr><td>{}</td><td>{}</td></tr>'.format(__if(ti), __ef(te))
     return o
 
