@@ -28,12 +28,13 @@ async def __root(req):
     DAY = HOUR * 24
     WEEK = DAY * 7
     MONTH = DAY * 31
+    now_f = __if( now, '%m/%d at %H:%M')
 
     recent = db.most_recent()
 
     if not recent:
         return response.html( __template.format(
-            now,'red','never',
+            now_f,'red','never',
             'N/A','N/A','N/A',
             '','','',
             now - DAY, now - WEEK, now - MONTH, 0
@@ -63,7 +64,7 @@ async def __root(req):
 
 
     return response.html( __template.format(
-        now,
+        now_f,
         timeout,
         last_report,
         last_temp,
@@ -80,9 +81,9 @@ def __ef(t):
     return '{0:.1f}'.format(t / 128 * 9/5 + 32)
 
 __timezone = pytz.timezone('America/Chicago')
-def __if(t):
+def __if(t, f='%m/%d %H:%M'):
     d = datetime.fromtimestamp(t, tz=__timezone)
-    return d.strftime('%m/%d %H:%M')
+    return d.strftime(f)
 
 def __tbl_format(l):
     o = ''
