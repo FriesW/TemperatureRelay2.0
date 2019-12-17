@@ -17,12 +17,10 @@ h3 {{
     color: red;
 }}
 #reload {{
-    display: none;
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    padding: 1em;
     background-color: #ff8296;
     color: #000000;
     font-weight: bold;
@@ -30,10 +28,6 @@ h3 {{
 }}
 #reload:hover {{
     background-color: #ffb7c3;
-}}
-#spacer {{
-    display: none;
-    height: 3em;
 }}
 #quick tr:nth-child(odd) {{
     background-color:#eeeeee;
@@ -71,25 +65,29 @@ table table {{
 #all table tr:nth-child(odd) {{
     background-color: #eeeeee;
 }}
+.bar{{
+    display: block;
+    padding:0;
+    height:0;
+    overflow: hidden;
+    animation-name: reveal;
+    animation-duration: 1s;
+    animation-delay: 1800s;
+    animation-fill-mode: both;
+}}
+@keyframes reveal {{
+  from {{padding:0;height:0;}}
+  to {{padding: 1em;height: 1.2em;}}
+}}
 </style>
 
 </head>
 <body>
 
-<a href='.' id='reload'>
+<a href='.' id='reload' class='bar'>
 This page was loaded on {}. It's data is probably outdated. Click to reload.
 </a>
-<div id='spacer'></div>
-<script>
-setTimeout(
-    function()
-    {{
-        document.getElementById('reload').style.display = 'block';
-        document.getElementById('spacer').style.display = 'block';
-    }},
-    30*60*1000 //30 minutes
-);
-</script>
+<div class='bar'></div>
 
 <h1>Town House Temperatures</h1>
 
