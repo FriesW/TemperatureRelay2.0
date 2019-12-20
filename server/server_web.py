@@ -5,6 +5,7 @@ import database as db
 import time
 from datetime import datetime
 import pytz
+from math import floor, ceil
 from config import WEB_PORT
 
 with open ("template.html", "r") as f:
@@ -45,6 +46,7 @@ async def __root(req):
         return response.html( __template.format(
             now_f,'red','never',
             'N/A','N/A','N/A',
+            '',
             '','','',
             now - DAY, now - WEEK, now - MONTH, 0
         ))
@@ -79,6 +81,7 @@ async def __root(req):
         last_temp,
         low_12,
         low_36,
+        __make_chart(HOUR * 36),
         __tbl_format(day),
         __tbl_format(week),
         __tbl_format(month),
@@ -86,8 +89,11 @@ async def __root(req):
     ))
 
 
+def __efi(t):
+    return t / 128 * 9/5 + 32
+
 def __ef(t):
-    return '{0:.1f}'.format(t / 128 * 9/5 + 32)
+    return '{:.1f}'.format(__efi(t))
 
 __timezone = pytz.timezone('America/Chicago')
 def __if(t, f='%m/%d %H:%M'):
@@ -107,6 +113,35 @@ def __tbl_format(l):
             o += '<tr><td>{}</td><td>{}</td></tr>'.format(__if(ti), __ef(te))
     return o
 
+def __make_chart(window):
+    BASE = 1000
+    RATIO = 4/1
+    def linmap(value, leftMin, leftMax, rightMin, rightMax):
+        return rightMin + float(value - leftMin) / float(leftMax - leftMin) * (rightMax - rightMin)
+
+    pts = list( db.iterate_recent(time_cutoff = time.time() - window) )
+    if len(pts) < 2: return ''
+
+    pts = [[p[0], __efi(p[1])] for p in pts]
+    pts_rot = list(zip(*pts))
+    min_i, min_e = map(min, pts_rot)
+    max_i, max_e = map(max, pts_rot)
+    min_e = floor(min_e)
+    max_e = ceil(max_e)
+
+    elems = []
+
+    for l in range(int(min_e), int(max_e) + 1, 1):
+        elems.append( '<path d="M 0 {0:.2f} L {1:.2f} {0:.2f}" stroke="grey" stroke-width="2"/>'.format(linmap(l, min_e,max_e, 0,BASE), BASE*RATIO) )
+
+    path = []
+    for p in pts:
+        i, e = p
+        e = linmap(e, min_e, max_e, max_e, min_e)
+        path.append( '{:.2f} {:.2f}'.format( linmap(i, min_i,max_i, 0,BASE*RATIO), linmap(e, min_e,max_e, 0,BASE)) )
+    elems.append( '<path d="M ' + ' L '.join(path) + '" stroke="black" fill="none" stroke-width="6"/>' )
+
+    return '<svg viewBox="0 0 {} {}" width="100%">{}</svg>'.format(int(BASE*RATIO), int(BASE), '\n'.join(elems) )
 
 def setup():
     loop = asyncio.get_event_loop()
