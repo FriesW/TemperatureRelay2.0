@@ -96,7 +96,7 @@ def __ef(t):
     return '{:.1f}'.format(__efi(t))
 
 __timezone = pytz.timezone('America/Chicago')
-def __if(t, f='%m/%d %H:%M'):
+def __if(t, f='%m/%d&nbsp;%H:%M'):
     d = datetime.fromtimestamp(t, tz=__timezone)
     return d.strftime(f)
 
@@ -141,8 +141,8 @@ def __make_chart(window):
         path.append( '{:.2f} {:.2f}'.format( linmap(i, min_i,max_i, 0,BASE*RATIO), linmap(e, min_e,max_e, 0,BASE)) )
     elems.append( '<path d="M ' + ' L '.join(path) + '" stroke="black" fill="none" stroke-width="6"/>' )
 
-    postfield = 'Start time: {} &nbsp; &nbsp; End time: {} &nbsp; &nbsp; &nbsp; &nbsp; Min temp: {} &nbsp; &nbsp; Max temp: {}<br><br>'.format(
-        __if(min_i), __if(max_i), int(min_e), int(max_e) )
+    postfield = 'Start&nbsp;time:&nbsp;{} &nbsp; &nbsp; End&nbsp;time:&nbsp;{} &nbsp; &nbsp; &nbsp; &nbsp; Min&nbsp;temp:&nbsp;{}&nbsp;F &nbsp; &nbsp; Max&nbsp;temp:&nbsp;{}&nbsp;F<br><br>'\
+        .format( __if(min_i), __if(max_i), int(min_e), int(max_e) )
 
     return '<svg viewBox="0 0 {} {}" width="100%">{}</svg>{}'.format(int(BASE*RATIO), int(BASE), '\n'.join(elems), postfield )
 
