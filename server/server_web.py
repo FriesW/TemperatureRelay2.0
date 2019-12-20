@@ -81,7 +81,7 @@ async def __root(req):
         last_temp,
         low_12,
         low_36,
-        __make_chart(HOUR * 36),
+        __make_chart(DAY * 2.5),
         __tbl_format(day),
         __tbl_format(week),
         __tbl_format(month),
@@ -141,7 +141,10 @@ def __make_chart(window):
         path.append( '{:.2f} {:.2f}'.format( linmap(i, min_i,max_i, 0,BASE*RATIO), linmap(e, min_e,max_e, 0,BASE)) )
     elems.append( '<path d="M ' + ' L '.join(path) + '" stroke="black" fill="none" stroke-width="6"/>' )
 
-    return '<svg viewBox="0 0 {} {}" width="100%">{}</svg>'.format(int(BASE*RATIO), int(BASE), '\n'.join(elems) )
+    postfield = 'Start time: {} &nbsp; &nbsp; End time: {} &nbsp; &nbsp; &nbsp; &nbsp; Min temp: {} &nbsp; &nbsp; Max temp: {}<br><br>'.format(
+        __if(min_i), __if(max_i), int(min_e), int(max_e) )
+
+    return '<svg viewBox="0 0 {} {}" width="100%">{}</svg>{}'.format(int(BASE*RATIO), int(BASE), '\n'.join(elems), postfield )
 
 def setup():
     loop = asyncio.get_event_loop()
