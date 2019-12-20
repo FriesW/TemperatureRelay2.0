@@ -193,7 +193,7 @@ The ends are held together by a nut and a screw which is passed through the enti
     * Remove unused code
 * Python server
     * General code cleanup, especially in webpage generation
-    * Add gzip compression for webpage serving
+    * ~~Add gzip compression for webpage serving~~
     * Improved logging
     * Add password protection option
 * Protocol improvements

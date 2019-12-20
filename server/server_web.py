@@ -1,6 +1,7 @@
 import asyncio
 from sanic import Sanic
 from sanic import response
+from sanic_brogz import Compress
 import database as db
 import time
 from datetime import datetime
@@ -12,6 +13,8 @@ with open ("template.html", "r") as f:
     __template = f.read()
 
 __srv = Sanic()
+__srv.config['COMPRESS_MIMETYPES'] = {'text/html','text/plain'}
+Compress(__srv)
 
 @__srv.route('/isup', methods=['GET', 'HEAD'])
 async def __isup(req):

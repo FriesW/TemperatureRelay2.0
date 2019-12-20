@@ -1,2 +1,3 @@
-sanic   #Known good: 19.9.0
-pytz    #Known good: 2019.3
+sanic           #Known good: 19.9.0
+pytz            #Known good: 2019.3
+sanic-brogz     #Known good: 0.1.3
