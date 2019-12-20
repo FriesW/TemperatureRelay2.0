@@ -16,7 +16,7 @@ __srv = Sanic()
 @__srv.route('/isup', methods=['GET', 'HEAD'])
 async def __isup(req):
     recent = db.most_recent()
-    if not recent or time.time() - recent[0] > 60 * 45:
+    if not recent or time.time() - recent[0] > 60 * 25:
         return response.text('sensor timeout\n', status=503 )
     else:
         return response.text('sensor is reporting\n', status=200 )

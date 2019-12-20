@@ -44,7 +44,7 @@ The output contains rows of epoch time of measurement and integer values of 128t
 
 The path `/isup` can be used to monitor the health of the service.
 If the remote sensor has recently made contact the HTTP status code `200` will be returned.
-If the remote sensor has not made contact in the last 45 minutes the HTTP status code `503` will be returned (note other pages will still work).
+If the remote sensor has not made contact in the last 25 minutes the HTTP status code `503` will be returned (note other pages will still work).
 A human readable text description is also provided in both cases.
 This path is useful for automated monitoring tools or services, such as [UptimeRobot](https://uptimerobot.com/).
 
@@ -94,6 +94,7 @@ The protocol is of client server relationship, where the remote sensor is the cl
 Each transaction consists of a request packet sent from client to server, followed by an ACK packet sent from server to client.
 
 The packet structure is as follows:
+<!-- TODO endianness -->
 
 |  Name  |  Byte Size  |  Type  |  Repetition (`n`)  |
 | ------ |:------:| ------ |:------:|
