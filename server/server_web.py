@@ -5,6 +5,7 @@ import database as db
 import time
 from datetime import datetime
 import pytz
+from config import WEB_PORT
 
 with open ("template.html", "r") as f:
     __template = f.read()
@@ -109,7 +110,7 @@ def __tbl_format(l):
 
 def setup():
     loop = asyncio.get_event_loop()
-    serv_coro = __srv.create_server(host="0.0.0.0", port=8000, return_asyncio_server=True)
+    serv_coro = __srv.create_server(host="0.0.0.0", port=WEB_PORT, return_asyncio_server=True)
     serv_task = asyncio.ensure_future(serv_coro, loop=loop)
     server = loop.run_until_complete(serv_task)
     server.after_start()
